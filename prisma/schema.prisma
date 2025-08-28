@@ -20,6 +20,19 @@ model Product {
   category    String?
   location    String
   imageUrl    String?
+  sellerEmail String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+  orders      Order[]
+}
+
+model Order {
+  id           String   @id @default(cuid())
+  buyerName    String
+  buyerEmail   String
+  buyerPhone   String?
+  message      String
+  productId    String
+  product      Product  @relation(fields: [productId], references: [id])
+  createdAt    DateTime @default(now())
 }

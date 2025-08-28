@@ -12,6 +12,7 @@ interface ProductForm {
   category: string;
   location: string;
   imageUrl: string;
+  sellerEmail: string;
 }
 
 const CATEGORIES = [
@@ -44,6 +45,7 @@ export default function AdminPage() {
     category: "",
     location: "",
     imageUrl: "",
+    sellerEmail: "",
   });
   
   const [loading, setLoading] = useState(false);
@@ -123,6 +125,7 @@ export default function AdminPage() {
         category: "",
         location: "",
         imageUrl: "",
+        sellerEmail: "",
       });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
@@ -292,6 +295,17 @@ export default function AdminPage() {
                 )}
               </div>
               
+              <div>
+                <label className="block text-sm font-semibold text-[#2d5016] mb-2">Seller Email</label>
+                <input 
+                  type="email"
+                  value={form.sellerEmail}
+                  onChange={bind("sellerEmail")}
+                  className="form-input w-full"
+                  placeholder="seller@example.com"
+                />
+              </div>
+
               <div>
                 <label className="block text-sm font-semibold text-[#2d5016] mb-2">Image Upload</label>
                 <div
