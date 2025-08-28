@@ -34,5 +34,6 @@ model Order {
   message      String
   productId    String
   product      Product  @relation(fields: [productId], references: [id])
+  sellerEmail String
   createdAt    DateTime @default(now())
 }
