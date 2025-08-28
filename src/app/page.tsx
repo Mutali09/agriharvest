@@ -15,6 +15,7 @@ interface Product {
   location: string;
   imageUrl: string | null;
   createdAt: Date;
+  sellerEmail?: string | null;
 }
 
 export default function HomePage() {
@@ -91,11 +92,24 @@ export default function HomePage() {
     setIsSubmitting(true);
     
     try {
-      // Here you would typically send the contact form to your backend
-      // For now, we'll just simulate a successful submission
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      alert(`Message sent successfully! The seller will contact you soon.`);
+      const res = await fetch('/api/orders', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          productId: contactModal.product?.id,
+          buyerName: contactForm.name,
+          buyerEmail: contactForm.email,
+          buyerPhone: contactForm.phone || undefined,
+          message: contactForm.message,
+        })
+      });
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.error || 'Failed to send message');
+      }
+
+      alert('Message sent successfully! The seller has been notified.');
       setContactModal({ show: false, product: null });
       setContactForm({ name: "", email: "", phone: "", message: "" });
     } catch (error) {
