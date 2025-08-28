@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  // Completely disable development indicators
+  devIndicators: false,
+  // Ensure clean output
+  poweredByHeader: false,
 };
 
 export default nextConfig;
