@@ -20,7 +20,7 @@ model Product {
   category    String?
   location    String
   imageUrl    String?
-  sellerEmail String?
+  sellerMobile String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   orders      Order[]
@@ -34,6 +34,6 @@ model Order {
   message      String
   productId    String
   product      Product  @relation(fields: [productId], references: [id])
-  sellerEmail String
+  sellerMobile String
   createdAt    DateTime @default(now())
 }

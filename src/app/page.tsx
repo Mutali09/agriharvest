@@ -15,26 +15,15 @@ interface Product {
   location: string;
   imageUrl: string | null;
   createdAt: Date;
-  sellerEmail?: string | null;
+  sellerMobile?: string | null;
 }
 
 export default function HomePage() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [contactModal, setContactModal] = useState<{ show: boolean; product: Product | null }>({
-    show: false,
-    product: null
-  });
   const [deleteModal, setDeleteModal] = useState<{ show: boolean; product: Product | null }>({
     show: false,
     product: null
   });
-  const [contactForm, setContactForm] = useState({
-    name: "",
-    email: "",
-    phone: "",
-    message: ""
-  });
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
   // Fetch products on component mount
@@ -52,10 +41,6 @@ export default function HomePage() {
     } catch (error) {
       console.error('Error fetching products:', error);
     }
-  };
-
-  const handleContactSeller = (product: Product) => {
-    setContactModal({ show: true, product });
   };
 
   const handleDeleteProduct = (product: Product) => {
@@ -84,38 +69,6 @@ export default function HomePage() {
       alert('Failed to delete product. Please try again.');
     } finally {
       setIsDeleting(false);
-    }
-  };
-
-  const handleSubmitContact = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    
-    try {
-      const res = await fetch('/api/orders', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          productId: contactModal.product?.id,
-          buyerName: contactForm.name,
-          buyerEmail: contactForm.email,
-          buyerPhone: contactForm.phone || undefined,
-          message: contactForm.message,
-        })
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.error || 'Failed to send message');
-      }
-
-      alert('Message sent successfully! The seller has been notified.');
-      setContactModal({ show: false, product: null });
-      setContactForm({ name: "", email: "", phone: "", message: "" });
-    } catch (error) {
-      alert('Failed to send message. Please try again.');
-    } finally {
-      setIsSubmitting(false);
     }
   };
 
@@ -218,15 +171,32 @@ export default function HomePage() {
                     <span className="text-[#8b4513]">Location:</span>
                     <span className="font-medium text-[#2d5016]">{p.location}</span>
                   </div>
+                  {p.sellerMobile && (
+                    <div className="flex items-center justify-between">
+                      <span className="text-[#8b4513]">📞 Seller:</span>
+                      <a 
+                        href={`tel:${p.sellerMobile}`}
+                        className="font-medium text-[#2d5016] hover:text-[#8b4513] transition-colors duration-200"
+                      >
+                        {p.sellerMobile}
+                      </a>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex gap-2 mt-4">
-                  <button 
-                    onClick={() => handleContactSeller(p)}
-                    className="flex-1 bg-gradient-to-r from-[#2d5016] to-[#8b4513] text-white py-2 px-4 rounded-lg hover:from-[#8b4513] hover:to-[#2d5016] transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+                  <a 
+                    href={p.sellerMobile ? `tel:${p.sellerMobile}` : undefined}
+                    target={p.sellerMobile ? "_self" : undefined}
+                    aria-disabled={!p.sellerMobile}
+                    className={`flex-1 text-center py-2 px-4 rounded-lg transition-all duration-200 font-medium shadow-md transform hover:-translate-y-0.5 ${
+                      p.sellerMobile
+                        ? 'bg-gradient-to-r from-[#2d5016] to-[#8b4513] text-white hover:from-[#8b4513] hover:to-[#2d5016]'
+                        : 'bg-gray-300 text-gray-600 cursor-not-allowed'
+                    }`}
                   >
-                    📞 Contact Seller
-                  </button>
+                    📞 Call Seller{p.sellerMobile ? '' : ' (no number)'}
+                  </a>
                   <button 
                     onClick={() => handleDeleteProduct(p)}
                     className="px-4 py-2 bg-[#c0392b] text-white rounded-lg hover:bg-[#a93226] transition-all duration-200 font-medium shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
@@ -238,95 +208,6 @@ export default function HomePage() {
               </div>
             </div>
           ))}
-        </div>
-      )}
-
-      {/* Contact Seller Modal */}
-      {contactModal.show && contactModal.product && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="card p-8 max-w-md w-full max-h-[90vh] overflow-y-auto animate-bounce-in">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-[#2d5016]">Contact Seller</h2>
-              <button
-                onClick={() => setContactModal({ show: false, product: null })}
-                className="text-[#8b4513] hover:text-[#2d5016] text-2xl transition-colors duration-200"
-              >
-                ×
-              </button>
-            </div>
-            
-            <div className="mb-6 p-4 bg-[#fdf6e3] rounded-lg border border-[#d2b48c]">
-              <h3 className="font-semibold text-[#2d5016] mb-2">{contactModal.product.title}</h3>
-              <p className="text-sm text-[#8b4513]">Location: {contactModal.product.location}</p>
-              <p className="text-sm text-[#8b4513]">Price: KES {contactModal.product.price.toLocaleString()} / {contactModal.product.unit}</p>
-            </div>
-
-            <form onSubmit={handleSubmitContact} className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-[#2d5016] mb-1">Your Name *</label>
-                <input
-                  type="text"
-                  required
-                  value={contactForm.name}
-                  onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
-                  className="form-input w-full"
-                  placeholder="Enter your full name"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[#2d5016] mb-1">Email *</label>
-                <input
-                  type="email"
-                  required
-                  value={contactForm.email}
-                  onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
-                  className="form-input w-full"
-                  placeholder="Enter your email"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[#2d5016] mb-1">Phone Number</label>
-                <input
-                  type="tel"
-                  value={contactForm.phone}
-                  onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
-                  className="form-input w-full"
-                  placeholder="Enter your phone number"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-[#2d5016] mb-1">Message *</label>
-                <textarea
-                  required
-                  rows={4}
-                  value={contactForm.message}
-                  onChange={(e) => setContactForm({ ...contactForm, message: e.target.value })}
-                  className="form-input w-full resize-none"
-                  placeholder="Tell the seller what you're interested in..."
-                />
-              </div>
-              
-              <div className="flex gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={() => setContactModal({ show: false, product: null })}
-                  className="btn-secondary flex-1"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn-primary flex-1 disabled:opacity-60"
-                >
-                  {isSubmitting ? "Sending..." : "Send Message"}
-                </button>
-              </div>
-            </form>
-          </div>
         </div>
       )}
 

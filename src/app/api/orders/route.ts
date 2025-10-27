@@ -16,6 +16,8 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    const sellerMobile = product.sellerMobile || "";
+
     const order = await prisma.order.create({
       data: {
         productId,
@@ -23,11 +25,10 @@ export async function POST(req: Request) {
         buyerEmail,
         buyerPhone: buyerPhone ?? null,
         message,
+        sellerMobile,
       },
     });
-
-    const sellerEmail = product.sellerEmail || process.env.FALLBACK_SELLER_EMAIL;
-    if (sellerEmail) {
+    if (sellerMobile) {
       const subject = `New order inquiry for ${product.title}`;
       const html = `
         <p>You have a new order inquiry on AgriHarvest.</p>
@@ -40,7 +41,7 @@ export async function POST(req: Request) {
         <hr/>
         <p>Order ID: ${order.id}</p>
       `;
-      await sendMail({ to: sellerEmail, subject, html });
+      await sendMail({ to: sellerMobile, subject, html });
     }
 
     return NextResponse.json({ id: order.id }, { status: 201 });

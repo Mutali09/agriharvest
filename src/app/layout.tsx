@@ -102,17 +102,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         
         <footer className="mt-16 bg-white/90 backdrop-blur-sm border-t border-[#d2b48c] shadow-inner transition-colors duration-300">
           <div className="mx-auto max-w-7xl px-4 py-8 text-center">
-            <div className="flex items-center justify-center space-x-4 mb-4">
-              <span className="text-2xl">🌾</span>
-              <span className="text-2xl">🚜</span>
-              <span className="text-2xl">🌱</span>
-              <span className="text-2xl">🐄</span>
-            </div>
             <p className="text-sm text-[#8b4513] mb-2">
               © {new Date().getFullYear()} agriharvest - Connecting farmers and buyers directly
             </p>
             <p className="text-xs text-[#d2b48c]">
-              Built with ❤️ for the agricultural community
+              For Agricultural Community
             </p>
           </div>
         </footer>

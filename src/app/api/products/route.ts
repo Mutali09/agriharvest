@@ -18,7 +18,7 @@ export async function GET() {
         category,
         location,
         imageUrl,
-        sellerEmail,
+        sellerMobile,
       } = body ?? {};
   
       if (!title || !description || !price || !unit || !quantity || !location) {
@@ -35,7 +35,7 @@ export async function GET() {
           category: category ?? null,
           location,
           imageUrl: imageUrl ?? null,
-          sellerEmail: sellerEmail ?? null,
+          sellerMobile: sellerMobile ?? null,
         },
       });
 

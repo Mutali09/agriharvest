@@ -12,7 +12,7 @@ interface ProductForm {
   category: string;
   location: string;
   imageUrl: string;
-  sellerEmail: string;
+  sellerMobile: string;
 }
 
 const CATEGORIES = [
@@ -45,7 +45,7 @@ export default function AdminPage() {
     category: "",
     location: "",
     imageUrl: "",
-    sellerEmail: "",
+    sellerMobile: "",
   });
   
   const [loading, setLoading] = useState(false);
@@ -125,7 +125,7 @@ export default function AdminPage() {
         category: "",
         location: "",
         imageUrl: "",
-        sellerEmail: "",
+        sellerMobile: "",
       });
     } catch (err: unknown) {
       const errorMessage = err instanceof Error ? err.message : 'An unknown error occurred';
@@ -296,13 +296,13 @@ export default function AdminPage() {
               </div>
               
               <div>
-                <label className="block text-sm font-semibold text-[#2d5016] mb-2">Seller Email</label>
+                <label className="block text-sm font-semibold text-[#2d5016] mb-2">Seller Mobile Number</label>
                 <input 
-                  type="email"
-                  value={form.sellerEmail}
-                  onChange={bind("sellerEmail")}
+                  type="tel"
+                  value={form.sellerMobile}
+                  onChange={bind("sellerMobile")}
                   className="form-input w-full"
-                  placeholder="seller@example.com"
+                  placeholder="e.g. +254712345678"
                 />
               </div>
 
